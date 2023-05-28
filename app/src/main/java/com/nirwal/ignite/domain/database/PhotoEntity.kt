@@ -6,8 +6,8 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class PhotoEntity(
-    @PrimaryKey(autoGenerate = true)    val uid: Int=0,
-    @ColumnInfo(name = "remoteId")      val remoteId: Int?,
+    @PrimaryKey
+    @ColumnInfo(name ="remoteId")       val remoteId: Int = 0,
     @ColumnInfo(name = "photographer")  val photographer: String?,
     @ColumnInfo(name = "photographerId")val photographerId: Int?,
     @ColumnInfo(name = "alt")           val alt: String?,

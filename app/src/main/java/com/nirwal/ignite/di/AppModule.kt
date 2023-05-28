@@ -14,10 +14,12 @@ import org.koin.dsl.module
 val appModule = module {
     single<PhotoRepository> { PhotoRepositoryImp()  }
     single { FavPhotoDatabase.getInstance(androidApplication()) }
+
     single { get<FavPhotoDatabase>().photoDao() }
+    single { get<FavPhotoDatabase>().searchHistoryDao() }
 
     single { MyDataStore(androidContext()) }
 
-    viewModel { MainViewModel(androidContext(),get(),get()) }
+    viewModel { MainViewModel(androidContext(),get(),get(), get()) }
     viewModel { SettingViewModel(get(),get())}
 }

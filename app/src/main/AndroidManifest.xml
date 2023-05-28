@@ -47,7 +47,12 @@
             android:foregroundServiceType="dataSync"
             tools:node="merge" />
 
-        <service android:name=".service.RandomWallpaperService" android:exported="false"/>
+        <service android:name=".service.RandomWallpaperService" android:exported="true">
+        <intent-filter>
+            <action android:name="android.service.wallpaper.WallpaperService" >
+            </action>
+        </intent-filter>
+        </service>
     </application>
 
 </manifest>

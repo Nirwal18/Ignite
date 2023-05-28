@@ -21,7 +21,7 @@ data class Photo (
 ){
     fun toPhotoEntity():PhotoEntity{
         return PhotoEntity(
-            remoteId = id,
+            remoteId = id ?: 0,
             alt=alt,
             photographer = photographer,
             photographerId = photographerId,

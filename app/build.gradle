@@ -19,6 +19,12 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        kapt {
+            arguments{
+                arg("room.schemaLocation", "$projectDir/schemas")
+            }
+        }
+
     }
 
     buildTypes {
@@ -53,6 +59,8 @@ var nav_version = "2.5.3"
 var ktor_version= "2.3.0"
 var work_version = "2.8.1"
 var room_version = "2.5.1"
+var maxkeppeler_dialog_version = "1.1.1"
+
 dependencies {
 
     implementation 'androidx.core:core-ktx:1.10.1'
@@ -62,8 +70,10 @@ dependencies {
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
-    implementation 'androidx.compose.material3:material3'
     implementation "androidx.compose.material:material-icons-extended"
+    // not includid in Bom
+    implementation 'androidx.compose.material3:material3:1.2.0-alpha02'
+
     implementation "androidx.navigation:navigation-compose:$nav_version"
 
     implementation "androidx.paging:paging-runtime:3.1.1"
@@ -102,6 +112,10 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
 
 
+    // Dialog Library compose
+    implementation "com.maxkeppeler.sheets-compose-dialogs:core:$maxkeppeler_dialog_version"
+    implementation "com.maxkeppeler.sheets-compose-dialogs:duration:$maxkeppeler_dialog_version"
+    implementation "com.maxkeppeler.sheets-compose-dialogs:option:$maxkeppeler_dialog_version"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'

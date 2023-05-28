@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,12 @@ class MyDataStore(private val context: Context) {
         }
     }
 
+    fun getLong(key: String, defaultValue: Long): Flow<Long> {
+        return context.dataStore.data.map {
+            it[longPreferencesKey(key)] ?: defaultValue
+        }
+    }
+
     fun getBoolean(key: String, defaultValue: Boolean): Flow<Boolean> {
         return context.dataStore.data.map {
             it[booleanPreferencesKey(key)] ?: defaultValue
@@ -41,6 +48,12 @@ class MyDataStore(private val context: Context) {
     suspend fun saveInt(key: String, value: Int) {
         context.dataStore.edit { settings ->
             settings[intPreferencesKey(key)] = value
+        }
+    }
+
+    suspend fun saveLong(key: String, value: Long) {
+        context.dataStore.edit { settings ->
+            settings[longPreferencesKey(key)] = value
         }
     }
 

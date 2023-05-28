@@ -90,6 +90,7 @@ class PhotoRepositoryImp():PhotoRepository {
         return  try {
             client.get(Endpoints.SEARCH_URL){
                 url {
+                    parameters.append("query", query)
                     parameters.append("page", page.toString())
                     parameters.append("per_page", itemCount.toString())
                 }

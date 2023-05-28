@@ -1,6 +1,7 @@
 package com.nirwal.ignite.ui.navigation
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -24,6 +25,7 @@ import com.nirwal.ignite.domain.model.Photo
 import com.nirwal.ignite.ui.viewModel.MainViewModel
 import com.nirwal.ignite.ui.screens.FavouriteScreen
 import com.nirwal.ignite.ui.screens.PhotoInfoScreen
+import com.nirwal.ignite.ui.screens.SearchScreen
 import com.nirwal.ignite.ui.screens.SettingScreen
 import com.nirwal.ignite.ui.screens.WallPaperScreen
 import com.nirwal.ignite.ui.viewModel.SettingViewModel
@@ -34,7 +36,7 @@ fun BottomNavHost(){
     val navController = rememberNavController()
     val vm: MainViewModel = koinViewModel()
     val settingVm:SettingViewModel = koinViewModel()
-    val photos = vm.imagesSource.collectAsLazyPagingItems()
+    val photos = vm.imageSource.collectAsLazyPagingItems()
 
 
     val bottomNavigationList = listOf(
@@ -43,22 +45,27 @@ fun BottomNavHost(){
         MyNavGraph.BottomNavGraph.SettingScreen
     )
 
-    Column {
+    Column(modifier = Modifier.fillMaxSize()) {
         NavHost(modifier = Modifier.weight(1f), navController = navController, startDestination = MyNavGraph.BottomNavGraph.WallpaperScreen.route){
             composable(MyNavGraph.BottomNavGraph.WallpaperScreen.route){
                 WallPaperScreen(
                     photos = photos,
-                    onFilterChange = vm::onFilterChange,
+                    searchHistory = vm.searchHistory.collectAsState(listOf()).value.map { it.query },
+                    onFilterChange = vm::onSearch,
                     onPhotoClick = {
                                    navController.navigate("photo_info/{id}"
                                        .replace(
                                            oldValue = "{id}",
                                            newValue = it.id.toString()
                                        ))
-                    },
-                    onFavouriteClick =vm::updateFavourites
+                    }
                 )
             }
+
+            composable(MyNavGraph.BottomNavGraph.SearchScreen.route){
+                SearchScreen()
+            }
+
             composable(MyNavGraph.BottomNavGraph.FavouriteScreen .route){
                 FavouriteScreen(
                     photos = vm.favoritePhotos.collectAsState(listOf()).value,
@@ -75,16 +82,12 @@ fun BottomNavHost(){
             }
             composable(MyNavGraph.BottomNavGraph.SettingScreen.route){
                 SettingScreen(
-                    isAutoWallpaperOn = settingVm.isWorkManagerOnFlow.collectAsState(false).value,
-                    isWifiReq = settingVm.isWifiReqFlow.collectAsState(false).value,
-                    isChargingReq = settingVm.isChargingReqFlow.collectAsState(false).value,
-                    isIdealReq = settingVm.isPhoneIdealReqFlow.collectAsState(false).value,
-                    onBack = {navController.popBackStack()},
-                    onConfigurationChange = settingVm::onConfigurationChange,
+                    uiState = settingVm.uiState.collectAsState().value,
+                    onUiEvent = settingVm::onEvent,
+                    onBack = {navController.popBackStack()}
 
                 )
             }
-
             composable("photo_info/{id}", arguments = listOf(
                 navArgument("id") { type = NavType.IntType }
             )){
@@ -92,7 +95,8 @@ fun BottomNavHost(){
                 PhotoInfoScreen(
                     photo = vm.getPhoto(id).collectAsState(Photo()).value,
                     setWallPaper = vm::setWallpaper,
-                    setLockScreen = vm::setLockScreen
+                    setLockScreen = vm::setLockScreen,
+                    setFavourites = vm::updateFavourites
                 )
             }
 

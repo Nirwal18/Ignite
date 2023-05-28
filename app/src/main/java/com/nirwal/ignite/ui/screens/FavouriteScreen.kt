@@ -74,11 +74,9 @@ fun FavouriteScreen(photos:List<PhotoEntity>, onBack:()->Unit, onPhotoClick:(Int
                 itemsIndexed(photos) { index, photo ->
                     WallpaperItem(
                         imageUrl = photo.mediumUrl.toString(),
-                        title = photo?.photographer.toString(),
+                        //title = photo?.photographer.toString(),
                         onClick = { onPhotoClick(photo.remoteId!!) },
-                       imageHeightoffset = adaptiveColumnWith,
-                        isFavouritePhoto = true,
-                        onFavouriteClick = {onFavouriteClick(photo,it)}
+                       imageHeightOffset = adaptiveColumnWith
                     )
                 }
             }
