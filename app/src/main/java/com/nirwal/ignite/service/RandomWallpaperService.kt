@@ -10,9 +10,11 @@ import androidx.core.app.NotificationCompat
 import com.nirwal.ignite.MyNotification
 import com.nirwal.ignite.R
 import com.nirwal.ignite.common.Utils
+import com.nirwal.ignite.domain.model.Photo
 import com.nirwal.ignite.domain.repositry.PhotoRepositoryImp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.random.Random
 
@@ -31,17 +33,29 @@ class RandomWallpaperService: Service() {
     fun setWallpaper(){
         CoroutineScope(Dispatchers.IO).launch {
             println("RandomWallpaperWorkerManager running")
-            val randomPages = Random.nextInt(1,1000)
-            val repository = PhotoRepositoryImp().getCuratedPhotos(randomPages, 30)
-            val imageCount = repository?.photos?.size ?: 0
+            var photos = getPhotos()
+            val imageCount = photos.size
+            var retryCount = 0
+            while(photos.isEmpty() && retryCount<=3){
+                photos = getPhotos()
+                delay(10_000)
+                retryCount++
+            }
             if (imageCount>0){
-                val photo = repository?.photos?.get(Random.nextInt(0,imageCount))
-                Utils.setWallpaper(photo?.src?.original.toString(), this@RandomWallpaperService)
+                val photo = photos.get(Random.nextInt(0,imageCount))
+                Utils.setWallpaper(photo.src?.original.toString(), this@RandomWallpaperService)
                 showToast("Applying wallpaper.\nPlease wait a little bit.")
             }else{
                 showToast("Wallpaper download error .\nCheck network connectivity")
             }
         }
+    }
+
+
+    private suspend fun getPhotos(): List<Photo> {
+        val randomPages = Random.nextInt(1,500)
+        val repository = PhotoRepositoryImp().getCuratedPhotos(randomPages, 30)
+        return repository?.photos?: listOf()
     }
 
 

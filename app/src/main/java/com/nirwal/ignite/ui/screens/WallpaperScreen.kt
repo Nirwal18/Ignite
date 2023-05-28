@@ -3,8 +3,10 @@ package com.nirwal.ignite.ui.screens
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -12,7 +14,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -47,59 +48,80 @@ import com.nirwal.ignite.domain.model.Photo
 
 
 @Composable
-fun WallPaperScreen(photos: LazyPagingItems<Photo>, onPhotoClick:(Photo)->Unit, onFavouriteClick: (PhotoEntity,Boolean) -> Unit) {
+fun WallPaperScreen(
+    photos: LazyPagingItems<Photo>,
+    onFilterChange:(String)->Unit,
+    onPhotoClick:(Photo)->Unit,
+    onFavouriteClick: (PhotoEntity,Boolean) -> Unit
+) {
 
     val screenType = rememberWindowInfo()
 
-    Box(Modifier.fillMaxSize()) {
-        when (photos.loadState.refresh) {
-            is LoadState.Error -> {
-                Text(modifier = Modifier.align(Alignment.Center), text = "Error loading data")
-            }
-            LoadState.Loading -> {
-                CircularProgressIndicator(modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(48.dp))
-            }
-            is LoadState.NotLoading -> {
 
-                val adaptiveColumnWith = if(screenType.screenWidthInfo==WindowInfo.WindowType.Compact){
-                    130.dp
-                }else{
-                    200.dp
+    Column {
+        ImageFilterChipGroup(onSelectionChange = onFilterChange)
+
+        Box(Modifier.fillMaxSize()) {
+            when (photos.loadState.refresh) {
+                is LoadState.Error -> {
+                    Text(modifier = Modifier.align(Alignment.Center), text = "Error loading data")
                 }
-                LazyVerticalGrid(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center),
-                    columns = GridCells.Adaptive(adaptiveColumnWith),
-                    contentPadding = PaddingValues(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ){
+                LoadState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(48.dp))
+                }
+                is LoadState.NotLoading -> {
 
-                    items(
-                        count = photos.itemCount,
-                        key = photos.itemKey<Photo>(key = null),
-                        contentType = photos.itemContentType<Photo>(
-                        )
-                    ) { index ->
-                        val photo = photos[index]
-                        WallpaperItem(
-                            imageUrl = photo?.src?.medium.toString(),
-                            title = photo?.photographer.toString(),
-                            imageHeightoffset = adaptiveColumnWith,
-                            onClick = { onPhotoClick.invoke(photo!!) },
-                            onFavouriteClick = {
-                                onFavouriteClick(photo!!.toPhotoEntity(),it)
-                            }
-                        )
+                    val adaptiveColumnWith = if(screenType.screenWidthInfo==WindowInfo.WindowType.Compact){
+                        130.dp
+                    }else{
+                        200.dp
                     }
-                }
+                    LazyVerticalGrid(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.Center),
+                        columns = GridCells.Adaptive(adaptiveColumnWith),
+                        contentPadding = PaddingValues(12.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp),
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ){
 
+                        items(
+                            count = photos.itemCount,
+                            key = photos.itemKey<Photo>(key = null),
+                            contentType = photos.itemContentType<Photo>(
+                            )
+                        ) { index ->
+                            val photo = photos[index]
+                            WallpaperItem(
+                                imageUrl = photo?.src?.medium.toString(),
+                                title = photo?.photographer.toString(),
+                                imageHeightoffset = adaptiveColumnWith,
+                                onClick = { onPhotoClick.invoke(photo!!) },
+                                onFavouriteClick = {
+                                    onFavouriteClick(photo!!.toPhotoEntity(),it)
+                                }
+                            )
+                        }
+                        if(photos.itemCount<=0){
+                            item {
+                                Text(modifier = Modifier.fillMaxWidth()
+                                    .align(Alignment.Center),
+                                    text = "Unable to fetch image from server.\n" +
+                                        "Make sure you are connected to Internet."
+                                )
+                            }
+                        }
+                    }
+
+                }
             }
         }
     }
+
+
 }
 
 @Preview(showBackground = true)
@@ -130,7 +152,7 @@ fun WallpaperItem(
         AsyncImage(
             modifier = Modifier
                 .align(Alignment.Center)
-                .height(90.dp+imageHeightoffset)
+                .height(90.dp + imageHeightoffset)
                 .clickable(onClick = onClick)
                 .clip(RoundedCornerShape(4.dp))
             ,

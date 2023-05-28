@@ -48,6 +48,7 @@ fun BottomNavHost(){
             composable(MyNavGraph.BottomNavGraph.WallpaperScreen.route){
                 WallPaperScreen(
                     photos = photos,
+                    onFilterChange = vm::onFilterChange,
                     onPhotoClick = {
                                    navController.navigate("photo_info/{id}"
                                        .replace(

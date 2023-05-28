@@ -6,5 +6,5 @@ import com.nirwal.ignite.domain.model.PhotoResult
 interface PhotoRepository {
     suspend fun getCuratedPhotos(page:Int, itemCount:Int): PhotoResult?
     suspend fun getPhoto(id:Int): Photo?
-    fun searchPhotos(query:String)
+    suspend fun searchPhotos(query: String, page: Int, itemCount: Int):PhotoResult?
 }

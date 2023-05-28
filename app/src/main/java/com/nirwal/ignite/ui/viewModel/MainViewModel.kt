@@ -27,8 +27,8 @@ class MainViewModel(
 
     val PAGE_SIZE = 90
 
-    val imagesSource = Pager(PagingConfig(pageSize = PAGE_SIZE)) {
-        PhotoPagingSource(repository)
+    var imagesSource = Pager(PagingConfig(pageSize = PAGE_SIZE)) {
+        PhotoPagingSource(repository,"All")
     }.flow
 
 
@@ -56,6 +56,14 @@ class MainViewModel(
 
     }.flowOn(Dispatchers.IO)
 
+
+
+    fun onFilterChange(filter:String){
+        println(filter)
+        imagesSource  = Pager(PagingConfig(pageSize = PAGE_SIZE)) {
+            PhotoPagingSource(repository,filter)
+        }.flow
+    }
 
 
     fun setWallpaper(imageUr:String){

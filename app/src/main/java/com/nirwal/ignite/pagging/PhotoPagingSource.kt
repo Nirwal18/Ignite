@@ -8,7 +8,7 @@ import com.nirwal.ignite.domain.repositry.PhotoRepository
 import java.io.IOException
 
 
-class PhotoPagingSource(private val repo:PhotoRepository):PagingSource<Int,Photo>() {
+class PhotoPagingSource(private val repo:PhotoRepository, private val query:String):PagingSource<Int,Photo>() {
    private val STARTING_PAGE = 1
 
     override fun getRefreshKey(state: PagingState<Int, Photo>): Int? {
@@ -23,7 +23,15 @@ class PhotoPagingSource(private val repo:PhotoRepository):PagingSource<Int,Photo
         val itemLoadCount = params.loadSize
 
         return try {
-            val response = repo.getCuratedPhotos(position, itemLoadCount)
+
+
+            val response = when{
+                "All"==query -> {repo.getCuratedPhotos(position, itemLoadCount)}
+                else -> {repo.searchPhotos(query,position, itemLoadCount)}
+            }
+
+            println(query)
+            //val response = repo.getCuratedPhotos(position, itemLoadCount)
             val photos = response?.photos
             val nextKey = if (photos.isNullOrEmpty()) {
                 null
