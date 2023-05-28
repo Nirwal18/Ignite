@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 
 @Preview(showBackground = true)
 @Composable
@@ -36,7 +37,7 @@ fun MyAppBar(
     onLeadingIconClick:()->Unit = {},
     onTrailingIconClick:()->Unit = {},
 ) {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(Modifier.fillMaxWidth().height(72.dp), verticalAlignment = Alignment.CenterVertically) {
         if(leadingIcon!=null) {
             IconButton(onClick = onLeadingIconClick) {
                 Icon(imageVector = leadingIcon, contentDescription = null)

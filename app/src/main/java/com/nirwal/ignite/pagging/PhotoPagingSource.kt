@@ -23,7 +23,7 @@ class PhotoPagingSource(private val repo:PhotoRepository, private val query:Stri
         val itemLoadCount = params.loadSize
 
         return try {
-
+            println(query)
 
             val response = when{
                 "All"==query -> {repo.getCuratedPhotos(position, itemLoadCount)}
