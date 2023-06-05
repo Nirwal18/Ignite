@@ -32,11 +32,12 @@ class RandomWallpaperWorkerManager(
 
             println("RandomWallpaperWorkerManager running")
 
-            val repository = PhotoRepositoryImp().getCuratedPhotos(1, 100)
+            val repository = PhotoRepositoryImp().getCuratedPhotos(1, 1000)
             val imageCount = repository?.photos?.size ?: 0
             if (imageCount>0){
                 val photo = repository?.photos?.get(Random.nextInt(0,imageCount))
                 Utils.setWallpaper(photo?.src?.original.toString(), context)
+                Thread.sleep(10_000)
                 Result.success()
             }else{
                 Result.retry()
